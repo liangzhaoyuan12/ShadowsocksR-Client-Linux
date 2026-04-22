@@ -86,7 +86,9 @@ export default {
     howToUse: '使用方法',
     steps: [
       'Firefox には独自のプロキシ設定があります。Firefox を使用する場合は、ブラウザの設定でプロキシを設定する必要があります。FoxyProxy 拡張機能を使用して SOCKS プロキシを設定することをお勧めします。Chromium ベースのブラウザを使用する場合は、この手順は不要です。',
-      'ターミナルアプリケーションを強制的にプロキシ経由にするには、proxychains を設定する必要があります。インストール後、設定ファイル ~/.config/proxychains/proxychains.conf を編集し、最後に以下を追加してください：socks5 127.0.0.1 <ポート番号>（ポート番号は設定で指定したローカルポート）。コマンドの前に proxychains4 を付けて使用します。例：proxychains4 curl https://www.google.com'
+      'ターミナルアプリケーションを強制的にプロキシ経由にするには、proxychains を設定する必要があります。インストール後、設定ファイル ~/.config/proxychains/proxychains.conf を編集し、最後に以下を追加してください：socks5 127.0.0.1 <ポート番号>（ポート番号は設定で指定したローカルポート）。コマンドの前に proxychains4 を付けて使用します。例：proxychains4 curl https://www.google.com',
+      'プロジェクトURL: https://github.com/liangzhaoyuan12/shadowsocksr-client-linux',
+      'ライセンス: MIT'
     ],
     localProxySettings: 'ローカルプロキシ設定',
     socks5: 'SOCKS5 プロキシ',

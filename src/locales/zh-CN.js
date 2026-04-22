@@ -86,7 +86,9 @@ export default {
     howToUse: '使用说明',
     steps: [
       '火狐有自己的代理设置，使用火狐浏览器时需要在浏览器设置中改代理设置。推荐在火狐的插件 FoxyProxy 中设置 SOCKS 代理，方便在各种代理环境中一键切换。若使用 Chromium 浏览器则不需要进行此设置。',
-      '若想强制终端应用走代理，需要配置 proxychains。安装后编辑配置文件 ~/.config/proxychains/proxychains.conf，在最后一行添加：socks5 127.0.0.1 <端口号>（端口号为配置中设置的本地端口）。使用时在命令前加 proxychains4 即可，例如：proxychains4 curl https://www.google.com'
+      '若想强制终端应用走代理，需要配置 proxychains。安装后编辑配置文件 ~/.config/proxychains/proxychains.conf，在最后一行添加：socks5 127.0.0.1 <端口号>（端口号为配置中设置的本地端口）。使用时在命令前加 proxychains4 即可，例如：proxychains4 curl https://www.google.com',
+      '项目地址：https://github.com/liangzhaoyuan12/shadowsocksr-client-linux',
+      '开源协议：MIT'
     ],
     localProxySettings: '本地代理设置',
     socks5: 'SOCKS5 代理',
