@@ -1,6 +1,6 @@
 [package]
 name = "shadowsocksr-client-linux"
-version = "0.1.0"
+version = "0.2.0"
 description = "A ShadowsocksR client for linux"
 authors = ["liangzhaoyuan12"]
 edition = "2021"
