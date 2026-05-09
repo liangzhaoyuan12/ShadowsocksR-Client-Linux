@@ -86,13 +86,15 @@ export default {
     howToUse: '사용 방법',
     steps: [
       'Firefox에는 자체 프록시 설정이 있습니다. Firefox 브라우저를 사용할 때는 브라우저 설정에서 프록시를 변경해야 합니다. Firefox 확장 프로그램 FoxyProxy에서 SOCKS 프록시를 설정하는 것이 좋으며, 다양한 프록시 환경에서 원클릭으로 전환할 수 있습니다. Chromium 기반 브라우저를 사용하는 경우 이 설정이 필요하지 않습니다.',
-      '터미널 애플리케이션이 강제로 프록시를 사용하도록 하려면 proxychains를 설정해야 합니다. 설치 후 설정 파일 ~/.config/proxychains/proxychains.conf를 편집하고 마지막 줄에 다음을 추가하세요: socks5 127.0.0.1 <포트 번호> (포트 번호는 설정에서 지정한 로컬 포트). 사용할 때 명령어 앞에 proxychains4를 붙이면 됩니다. 예: proxychains4 curl https://www.google.com',
+      '프록시를 활성화하면 터미널 애플리케이션이 자동으로 SOCKS 프록시를 사용합니다. 이미 열려 있는 터미널 창이 있다면 다시 열어주세요.',
+      'GNOME/Cinnamon/MATE/COSMIC/Budgie/Pantheon/Unity/Deepin/UOS/UKUI/Ubuntu 및 KDE Plasma 데스크톱 사용자: GUI 애플리케이션은 자동으로 프록시 설정을 따릅니다. 터미널만 다시 열면 됩니다. 기타 데스크톱(XFCE, i3, sway, Hyprland 등): 모든 애플리케이션을 다시 열어야 적용됩니다.',
       '프로젝트 주소: https://github.com/liangzhaoyuan12/shadowsocksr-client-linux',
       '오픈 소스 라이선스: MIT'
     ],
     localProxySettings: '로컬 프록시 설정',
     socks5: 'SOCKS5 프록시',
-    portLabel: '포트'
+    portLabel: '포트',
+    followSystem: '시스템 설정 따르기'
   },
   footer: {
     text: 'ShadowsocksR Linux 클라이언트'

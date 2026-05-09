@@ -86,13 +86,15 @@ export default {
     howToUse: 'How to Use',
     steps: [
       'Firefox has its own proxy settings. When using Firefox, you need to configure proxy in browser settings. It is recommended to use the FoxyProxy extension to set up SOCKS proxy, making it easy to switch between different proxy environments with one click. If using Chromium-based browsers, this step is not required.',
-      'To force terminal applications to use proxy, you need to configure proxychains. After installation, edit the config file ~/.config/proxychains/proxychains.conf and add at the end: socks5 127.0.0.1 <port> (port is the local port set in your configuration). Prefix commands with proxychains4, e.g.: proxychains4 curl https://www.google.com',
+      'Terminal applications will automatically use the SOCKS proxy after enabling. If terminal windows were already open, please reopen them for the proxy settings to take effect.',
+      'GNOME/Cinnamon/MATE/COSMIC/Budgie/Pantheon/Unity/Deepin/UOS/UKUI/Ubuntu and KDE Plasma users: GUI applications adopt proxy settings automatically — only terminal windows need reopening. Other desktops (XFCE, i3, sway, Hyprland, etc.): all applications must be reopened for proxy to take effect.',
       'Project URL: https://github.com/liangzhaoyuan12/shadowsocksr-client-linux',
       'License: MIT'
     ],
     localProxySettings: 'Local Proxy Settings',
     socks5: 'SOCKS5 Proxy',
-    portLabel: 'Port'
+    portLabel: 'Port',
+    followSystem: 'Follow System'
   },
   footer: {
     text: 'ShadowsocksR Linux Client'

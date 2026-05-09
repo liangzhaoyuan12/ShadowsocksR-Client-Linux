@@ -9,15 +9,8 @@ import ruRU from './locales/ru-RU'
 
 const STORAGE_KEY = 'ssr-client-language'
 
-// Get system language or default to English
-const getSystemLanguage = () => {
-  // First check if user has a saved preference
-  const savedLang = localStorage.getItem(STORAGE_KEY)
-  if (savedLang && ['zh-CN', 'zh-TW', 'zh-HK', 'en-US', 'ja-JP', 'ko-KR', 'ru-RU'].includes(savedLang)) {
-    return savedLang
-  }
-
-  // Otherwise detect system language
+// Detect system locale from navigator (no localStorage check)
+export function detectSystemLocale() {
   const lang = navigator.language || 'en-US'
   if (lang.startsWith('zh')) {
     if (lang.includes('TW') || lang.includes('tw')) {
@@ -40,9 +33,29 @@ const getSystemLanguage = () => {
   return 'en-US'
 }
 
+// Get initial locale: auto → system detect, otherwise saved preference
+function getInitialLocale() {
+  const savedLang = localStorage.getItem(STORAGE_KEY)
+  // 'auto' or no saved preference: use system detection
+  if (savedLang === 'auto' || !savedLang) {
+    return detectSystemLocale()
+  }
+  // Explicit locale: use saved value if valid
+  if (['zh-CN', 'zh-TW', 'zh-HK', 'en-US', 'ja-JP', 'ko-KR', 'ru-RU'].includes(savedLang)) {
+    return savedLang
+  }
+  return 'en-US'
+}
+
+// Whether user is in "follow system" mode
+export function isAutoMode() {
+  const saved = localStorage.getItem(STORAGE_KEY)
+  return saved === 'auto' || saved === null
+}
+
 const i18n = createI18n({
-  legacy: false, // Use Composition API mode
-  locale: getSystemLanguage(),
+  legacy: false,
+  locale: getInitialLocale(),
   fallbackLocale: 'en-US',
   messages: {
     'zh-CN': zhCN,

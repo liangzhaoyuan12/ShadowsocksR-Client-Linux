@@ -86,13 +86,15 @@ export default {
     howToUse: '使用說明',
     steps: [
       'Firefox 有自己的代理設定，使用 Firefox 瀏覽器時需要在瀏覽器設定中更改代理設定。推薦在 Firefox 的擴充功能 FoxyProxy 中設定 SOCKS 代理，方便在各種代理環境中一鍵切換。若使用 Chromium 瀏覽器則不需要進行此設定。',
-      '若想強制終端應用程式走代理，需要設定 proxychains。安裝後編輯設定檔 ~/.config/proxychains/proxychains.conf，在最後一行新增：socks5 127.0.0.1 <連接埠號碼>（連接埠號碼為設定中設定的本機連接埠）。使用時在指令前加 proxychains4 即可，例如：proxychains4 curl https://www.google.com',
+      '開啟代理後終端應用程式將自動透過 SOCKS 代理連網。若終端機視窗已開啟，請重新開啟終端機以生效。',
+      'GNOME/Cinnamon/MATE/COSMIC/Budgie/Pantheon/Unity/Deepin/UOS/UKUI/Ubuntu 及 KDE Plasma 桌面使用者：GUI 應用程式自動跟隨代理設定，僅需重新開啟終端機。其他桌面（XFCE、i3、sway、Hyprland 等）：所有應用程式均需重新開啟以生效。',
       '專案位址：https://github.com/liangzhaoyuan12/shadowsocksr-client-linux',
       '開源協議：MIT'
     ],
     localProxySettings: '本機代理設定',
     socks5: 'SOCKS5 代理',
-    portLabel: '連接埠'
+    portLabel: '連接埠',
+    followSystem: '跟隨系統'
   },
   footer: {
     text: 'ShadowsocksR Linux 客戶端'

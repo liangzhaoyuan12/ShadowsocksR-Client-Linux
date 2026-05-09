@@ -86,13 +86,15 @@ export default {
     howToUse: '使用方法',
     steps: [
       'Firefox には独自のプロキシ設定があります。Firefox を使用する場合は、ブラウザの設定でプロキシを設定する必要があります。FoxyProxy 拡張機能を使用して SOCKS プロキシを設定することをお勧めします。Chromium ベースのブラウザを使用する場合は、この手順は不要です。',
-      'ターミナルアプリケーションを強制的にプロキシ経由にするには、proxychains を設定する必要があります。インストール後、設定ファイル ~/.config/proxychains/proxychains.conf を編集し、最後に以下を追加してください：socks5 127.0.0.1 <ポート番号>（ポート番号は設定で指定したローカルポート）。コマンドの前に proxychains4 を付けて使用します。例：proxychains4 curl https://www.google.com',
+      'プロキシを有効にすると、ターミナルアプリケーションは自動的に SOCKS プロキシを使用します。すでに開いているターミナルウィンドウがある場合は、再度開き直してください。',
+      'GNOME/Cinnamon/MATE/COSMIC/Budgie/Pantheon/Unity/Deepin/UOS/UKUI/Ubuntu および KDE Plasma デスクトップユーザー：GUI アプリケーションは自動的にプロキシ設定に従います。再起動が必要なのはターミナルのみです。その他のデスクトップ（XFCE、i3、sway、Hyprland など）：すべてのアプリケーションを再起動する必要があります。',
       'プロジェクトURL: https://github.com/liangzhaoyuan12/shadowsocksr-client-linux',
       'ライセンス: MIT'
     ],
     localProxySettings: 'ローカルプロキシ設定',
     socks5: 'SOCKS5 プロキシ',
-    portLabel: 'ポート'
+    portLabel: 'ポート',
+    followSystem: 'システムに従う'
   },
   footer: {
     text: 'ShadowsocksR Linux クライアント'

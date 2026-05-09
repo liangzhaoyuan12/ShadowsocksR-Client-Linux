@@ -5,6 +5,9 @@ import ConfigList from "./components/ConfigList.vue";
 import ConfigForm from "./components/ConfigForm.vue";
 import ProxyControl from "./components/ProxyControl.vue";
 import { getConfigInfo, disableProxy } from "./utils/api";
+import { detectSystemLocale, isAutoMode, STORAGE_KEY } from "./i18n";
+
+const ACTIVE_CONFIG_KEY = 'ssr-client-active-config';
 
 const { t, locale, tm } = useI18n();
 
@@ -20,7 +23,9 @@ const activeConfigPort = ref(1080);
 const steps = computed(() => tm('dashboard.steps'));
 
 // Language switch
+const followSystem = ref(isAutoMode());
 const languages = [
+  { code: 'auto', name: '' },  // name rendered via t('dashboard.followSystem') in template
   { code: 'zh-CN', name: '简体中文' },
   { code: 'zh-TW', name: '繁體中文（台灣）' },
   { code: 'zh-HK', name: '繁體中文（港澳）' },
@@ -34,12 +39,20 @@ const currentLocale = ref(locale.value);
 const langDropdownOpen = ref(false);
 
 function changeLanguage(code) {
-  const lang = languages.find(l => l.code === code);
-  if (lang) {
-    locale.value = lang.code;
-    currentLocale.value = lang.code;
-    // Save language preference to localStorage
-    localStorage.setItem('ssr-client-language', lang.code);
+  if (code === 'auto') {
+    followSystem.value = true;
+    localStorage.setItem(STORAGE_KEY, 'auto');
+    const detected = detectSystemLocale();
+    locale.value = detected;
+    currentLocale.value = detected;
+  } else {
+    const lang = languages.find(l => l.code === code);
+    if (lang && lang.code !== 'auto') {
+      followSystem.value = false;
+      locale.value = lang.code;
+      currentLocale.value = lang.code;
+      localStorage.setItem(STORAGE_KEY, lang.code);
+    }
   }
   langDropdownOpen.value = false;
 }
@@ -58,6 +71,9 @@ function handleClickOutside(event) {
 
 // Get current language display name
 const currentLangName = computed(() => {
+  if (followSystem.value) {
+    return t('dashboard.followSystem');
+  }
   return languages.find(l => l.code === currentLocale.value)?.name || 'English';
 });
 
@@ -83,6 +99,7 @@ function handleSelectConfig(cfgName) {
     disableProxyAndSelect(cfgName);
   } else {
     activeConfig.value = cfgName;
+    localStorage.setItem(ACTIVE_CONFIG_KEY, cfgName);
     updateActiveConfigPort(cfgName);
   }
 }
@@ -92,6 +109,7 @@ async function disableProxyAndSelect(cfgName) {
     await disableProxy();
     proxyEnabled.value = false;
     activeConfig.value = cfgName;
+    localStorage.setItem(ACTIVE_CONFIG_KEY, cfgName);
     updateActiveConfigPort(cfgName);
   } catch (err) {
     console.error("Failed to disable proxy:", err);
@@ -131,15 +149,18 @@ function handleFormCancelled() {
 
 function handleProxyStatusChanged(enabled) {
   proxyEnabled.value = enabled;
-  if (!enabled) {
-    activeConfig.value = null;
-    activeConfigPort.value = 1080;
-  }
 }
 
 // Setup click outside listener for dropdown
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
+
+  // Restore last selected config
+  const savedConfig = localStorage.getItem(ACTIVE_CONFIG_KEY);
+  if (savedConfig) {
+    activeConfig.value = savedConfig;
+    updateActiveConfigPort(savedConfig);
+  }
 });
 
 onUnmounted(() => {
@@ -167,10 +188,10 @@ onUnmounted(() => {
               v-for="lang in languages"
               :key="lang.code"
               class="lang-dropdown-item"
-              :class="{ active: currentLocale === lang.code }"
+              :class="{ active: lang.code === 'auto' ? followSystem : currentLocale === lang.code }"
               @click="changeLanguage(lang.code)"
             >
-              {{ lang.name }}
+              {{ lang.code === 'auto' ? t('dashboard.followSystem') : lang.name }}
             </div>
           </div>
         </div>
