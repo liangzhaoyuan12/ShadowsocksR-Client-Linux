@@ -7,6 +7,9 @@ DEB_DIR="$PROJECT_ROOT/src-tauri/target/release/bundle/deb"
 RPM_DIR="$PROJECT_ROOT/src-tauri/target/release/bundle/rpm"
 BUILD_DIR="$PROJECT_ROOT/build"
 SIDECAR="$PROJECT_ROOT/src-tauri/target/release/ssr-native-client"
+VERSION=$(grep -oP '(?<="version": ")[^"]+' "$PROJECT_ROOT/src-tauri/tauri.conf.json")
+ARCH=$(uname -m)
+TAR_NAME="shadowsocksr-client-linux_${VERSION}_${ARCH}.tar.gz"
 
 echo "==> Building release with Tauri..."
 cd "$PROJECT_ROOT"
@@ -38,7 +41,7 @@ Usage:
 The sidecar binary (ssr-native-client) must be in the same directory.
 EOF
 cd "$BUILD_DIR"
-tar -czf "shadowsocksr-client-linux.tar.gz" "shadowsocksr-client-linux"
+tar -czf "$TAR_NAME" "shadowsocksr-client-linux"
 rm -rf "$TAR_DIR"
 
 echo "==> Done! Output in: $BUILD_DIR"
