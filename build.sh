@@ -6,7 +6,7 @@ BINARY="$PROJECT_ROOT/src-tauri/target/release/shadowsocksr-client-linux"
 DEB_DIR="$PROJECT_ROOT/src-tauri/target/release/bundle/deb"
 RPM_DIR="$PROJECT_ROOT/src-tauri/target/release/bundle/rpm"
 BUILD_DIR="$PROJECT_ROOT/build"
-SIDECAR="$PROJECT_ROOT/src-tauri/binaries/ssr-native-client-x86_64-unknown-linux-gnu"
+SIDECAR="$PROJECT_ROOT/src-tauri/target/release/ssr-native-client"
 
 echo "==> Building release with Tauri..."
 cd "$PROJECT_ROOT"
