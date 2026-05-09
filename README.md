@@ -47,7 +47,23 @@ This project supports multiple CPU architectures:
 
 ### Installation
 
-#### Building from Source
+#### Quick Build (Recommended)
+
+Use the `build.sh` script to build and package everything automatically:
+
+```bash
+git clone https://github.com/liangzhaoyuan12/shadowsocksr-client-linux.git
+cd shadowsocksr-client-linux
+npm install
+./build.sh
+```
+
+The `build/` directory will contain:
+- `*.deb` — Debian/Ubuntu package
+- `*.rpm` — Fedora/openSUSE package
+- `shadowsocksr-client-linux_{version}_{arch}.tar.gz` — Portable archive (non-deb/RPM users)
+
+#### Manual Build from Source
 
 1. Clone the repository:
 ```bash
@@ -104,14 +120,14 @@ Before running the application, make sure you have the following system librarie
 
 **Installation Instructions:**
 
-1. Download the `tar.gz` package from the releases page
+1. Download the `tar.gz` package from the releases page (e.g. `shadowsocksr-client-linux_0.3.0_x86_64.tar.gz`)
 2. Extract the archive:
    ```bash
-   tar -xzf shadowsocksr-linux-*.tar.gz
+   tar -xzf shadowsocksr-client-linux_*.tar.gz
    ```
 3. Navigate to the extracted directory and run the executable:
    ```bash
-   cd shadowsocksr-linux
+   cd shadowsocksr-client-linux
    ./shadowsocksr-client-linux
    ```
 

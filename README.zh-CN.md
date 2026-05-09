@@ -47,7 +47,23 @@
 
 ### 安装方法
 
-#### 从源码编译
+#### 快速构建（推荐）
+
+使用 `build.sh` 脚本一键构建并打包：
+
+```bash
+git clone https://github.com/liangzhaoyuan12/shadowsocksr-client-linux.git
+cd shadowsocksr-client-linux
+npm install
+./build.sh
+```
+
+`build/` 目录将包含：
+- `*.deb` — Debian/Ubuntu 安装包
+- `*.rpm` — Fedora/openSUSE 安装包
+- `shadowsocksr-client-linux_{版本}_{架构}.tar.gz` — 便携压缩包（非 deb/RPM 用户）
+
+#### 手动从源码编译
 
 1. 克隆仓库：
 ```bash
@@ -104,14 +120,14 @@ npm run tauri build -- --target aarch64-unknown-linux-gnu
 
 **使用说明：**
 
-1. 从发布页面下载 tar.gz 包
+1. 从发布页面下载 tar.gz 包（如 `shadowsocksr-client-linux_0.3.0_x86_64.tar.gz`）
 2. 解压压缩包：
    ```bash
-   tar -xzf shadowsocksr-linux-*.tar.gz
+   tar -xzf shadowsocksr-client-linux_*.tar.gz
    ```
 3. 进入解压后的目录并运行可执行文件：
    ```bash
-   cd shadowsocksr-linux
+   cd shadowsocksr-client-linux
    ./shadowsocksr-client-linux
    ```
 

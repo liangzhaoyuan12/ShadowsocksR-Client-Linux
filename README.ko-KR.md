@@ -47,7 +47,23 @@ Firefox 브라우저를 사용할 때는 브라우저에서 별도로 프록시 
 
 ### 설치
 
-#### 소스에서 빌드
+#### 빠른 빌드（권장）
+
+`build.sh` 스크립트로 빌드와 패키징을 자동화：
+
+```bash
+git clone https://github.com/liangzhaoyuan12/shadowsocksr-client-linux.git
+cd shadowsocksr-client-linux
+npm install
+./build.sh
+```
+
+`build/` 디렉터리에 다음이 생성됩니다：
+- `*.deb` — Debian/Ubuntu 패키지
+- `*.rpm` — Fedora/openSUSE 패키지
+- `shadowsocksr-client-linux_{버전}_{아키텍처}.tar.gz` — 휴대용 아카이브（deb/RPM 외 사용자용）
+
+#### 수동 빌드
 
 1. 저장소 클론:
 ```bash
@@ -104,14 +120,14 @@ deb 기반(Debian, Ubuntu 등) 또는 rpm 기반(Fedora, openSUSE 등) 패키지
 
 **사용 방법:**
 
-1. 릴리스 페이지에서 `tar.gz` 패키지 다운로드
+1. 릴리스 페이지에서 `tar.gz` 패키지 다운로드（예: `shadowsocksr-client-linux_0.3.0_x86_64.tar.gz`）
 2. 아카이브 압축 해제:
    ```bash
-   tar -xzf shadowsocksr-linux-*.tar.gz
+   tar -xzf shadowsocksr-client-linux_*.tar.gz
    ```
 3. 압축 해제된 디렉토리로 이동하여 실행 파일 실행:
    ```bash
-   cd shadowsocksr-linux
+   cd shadowsocksr-client-linux
    ./shadowsocksr-client-linux
    ```
 

@@ -47,7 +47,23 @@
 
 ### Установка
 
-#### Сборка из исходников
+#### Быстрая сборка (рекомендуется)
+
+Используйте скрипт `build.sh` для автоматической сборки и упаковки:
+
+```bash
+git clone https://github.com/liangzhaoyuan12/shadowsocksr-client-linux.git
+cd shadowsocksr-client-linux
+npm install
+./build.sh
+```
+
+В каталоге `build/` будут созданы:
+- `*.deb` — пакет для Debian/Ubuntu
+- `*.rpm` — пакет для Fedora/openSUSE
+- `shadowsocksr-client-linux_{версия}_{архитектура}.tar.gz` — портативный архив (для пользователей не на deb/RPM)
+
+#### Ручная сборка из исходников
 
 1. Клонируйте репозиторий:
 ```bash
@@ -104,14 +120,14 @@ npm run tauri build -- --target aarch64-unknown-linux-gnu
 
 **Инструкция по установке:**
 
-1. Скачайте пакет `tar.gz` со страницы релизов
+1. Скачайте пакет `tar.gz` со страницы релизов (например, `shadowsocksr-client-linux_0.3.0_x86_64.tar.gz`)
 2. Распакуйте архив:
    ```bash
-   tar -xzf shadowsocksr-linux-*.tar.gz
+   tar -xzf shadowsocksr-client-linux_*.tar.gz
    ```
 3. Перейдите в распакованную директорию и запустите исполняемый файл:
    ```bash
-   cd shadowsocksr-linux
+   cd shadowsocksr-client-linux
    ./shadowsocksr-client-linux
    ```
 
