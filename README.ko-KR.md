@@ -1,55 +1,72 @@
-# ShadowsocksR Linux 클라이언트
+# Linux용 ShadowsocksR 클라이언트
 
 <div align="center">
 
-**Tauri + Vue 3로 구축된 현대적인 Linux ShadowsocksR 클라이언트**
+**Tauri + Vue 3로 구축된 모던 크로스 플랫폼 ShadowsocksR Linux 클라이언트**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Tauri](https://img.shields.io/badge/Tauri-2.0-blue)](https://tauri.app/)
 [![Vue](https://img.shields.io/badge/Vue-3.5-green)](https://vuejs.org/)
 
-[English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文（台灣）](README.zh-TW.md) | [繁體中文（港澳）](README.zh-HK.md) | [日本語](README.ja-JP.md) | [Русский](README.ru-RU.md)
+[English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文（台灣）](README.zh-TW.md) | [繁體中文（港澳）](README.zh-HK.md) | [日本語](README.ja-JP.md) | 한국어 | [Русский](README.ru-RU.md)
 
 </div>
 
-### 기능
+---
 
-- **현대적인 UI**: Vue 3로 구축된 깔끔하고 직관적인 인터페이스
-- **다국어 지원**: 간체 중국어, 번체 중국어(대만/홍콩), 영어, 일본어, 한국어, 러시아어 지원
-- **다크 모드**: 시스템 설정에 따라 다크/라이트 테마 자동 전환
-- **시스템 프록시 통합**: GNOME 및 KDE 데스크톱 환경의 시스템 프록시 자동 설정
-- **다중 설정 관리**: 여러 SSR 프로필을 쉽게 관리
-- **보안**: 신뢰할 수 있는 shadowsocksr-native 백엔드 기반
+## 주요 기능
 
-### 데스크톱 환경 지원
+- **스마트 라우팅**：내장 SOCKS5 프록시 라우터, 4가지 라우팅 모드 지원 — LAN + 중국 본토 우회 / LAN 우회 / 중국 우회 / 글로벌. 국내 트래픽은 자동으로 직접 연결하고 해외 트래픽은 프록시를 통해 전달하므로 수동 전환이 필요 없습니다.
+- **듀얼 포트 아키텍처**：라우터 포트(앱에 노출, 대시보드에서 설정 가능)와 SSR 서비스 포트(내부용, 편집기에서 설정 가능)가 독립적으로 실행됩니다. 시스템 프록시 설정(gsettings, kwriteconfig, 환경 변수)은 항상 라우터 포트를 가리켜 일관된 동작을 보장합니다.
+- **환경 변수 제어**：선택적 체크박스 — 켜면 시스템 환경 변수(`all_proxy`/`ALL_PROXY`)가 자동으로 관리됩니다. 끄면 proxychains를 사용하여 전역 환경에 영향을 주지 않고 명령별 프록시 라우팅이 가능합니다.
+- **Proxychains 가이드**：동적으로 표시되는 설정과 함께 Proxychains 구성 지침이 내장되어 있습니다.
+- **모던 UI**：Vue 3 + Composition API로 구축된 깔끔하고 직관적인 인터페이스.
+- **다국어 지원**：7개 언어 지원 — 간체 중국어, 번체 중국어(대만/홍콩), 영어, 일본어, 한국어, 러시아어.
+- **다크 모드**：시스템 환경설정에 따라 자동으로 다크/라이트 테마 전환.
+- **시스템 프록시 통합**：GNOME, KDE Plasma, XFCE 데스크톱 환경 자동 설정.
+- **다중 구성**：여러 SSR 프로필을 쉽게 관리.
 
-본 애플리케이션은 주요 Linux 데스크톱 환경에 대한 자동 시스템 프록시 설정을 제공합니다:
+---
+
+## 데스크톱 환경 지원
 
 | 분류 | 데스크톱 환경 | 프록시 방식 | GUI 재시작 |
 |---|---|---|---|
 | **GNOME 계열** | GNOME, Ubuntu, Cinnamon, MATE, COSMIC, Budgie, Pantheon, Unity, Deepin, UOS, UKUI | gsettings | 불필요 |
 | **KDE Plasma** | KDE Plasma 5/6, LXQt | kwriteconfig5/6 + dbus | 불필요 |
 | **XFCE** | XFCE, Xubuntu | xfconf-query | 필요 |
-| **창 관리자** | i3, sway, Hyprland, niri, Openbox, Fluxbox, dwm, awesome, bspwm, Qtile, herbstluftwm, icewm, jwm, xmonad, Enlightenment | 환경 변수 | 필요 |
+| **창 관리자** | i3, sway, Hyprland, Openbox, Fluxbox, dwm, awesome, bspwm, Qtile, herbstluftwm, icewm, jwm, xmonad, Enlightenment | 환경 변수(켠 경우) 또는 proxychains | 필요 |
 
-**터미널 애플리케이션**: 모든 데스크톱 환경에서 프록시 활성화 후 터미널 애플리케이션이 자동으로 SOCKS 프록시를 사용합니다. 이미 열려 있는 터미널 창이 있다면 다시 열어주세요.
+**터미널 앱**：「환경 변수 수정」이 켜져 있으면 새로 열린 터미널이 자동으로 SOCKS 프록시를 사용합니다. 기존 터미널은 다시 열어야 합니다. GNOME/KDE 이외의 데스크톱에서는 터미널 프록시 지원을 위해 이 옵션이 필수입니다.
 
-Firefox 브라우저를 사용할 때는 브라우저에서 별도로 프록시 설정이 필요합니다. 다양한 프록시 환경을 쉽게 전환하려면 FoxyProxy 확장 기능을 사용하는 것이 좋습니다. Chromium 기반 브라우저는 시스템 프록시 설정을 자동으로 사용합니다(GNOME/KDE의 경우).
+**Firefox**：브라우저 설정에서 별도로 프록시를 구성하세요. FoxyProxy 확장 기능을 사용하면 쉽게 전환할 수 있습니다. Chromium 기반 브라우저는 시스템 프록시 설정을 자동으로 따릅니다(GNOME/KDE).
 
-### 아키텍처 지원
+---
 
-본 프로젝트는 여러 CPU 아키텍처를 지원합니다:
-- **x86_64** (amd64) - 현재 사전 빌드 제공
-- **i686** (32비트 x86) - 필요한 경우 소스에서 빌드
-- **aarch64** (ARM 64비트) - 필요한 경우 소스에서 빌드
+## 스마트 라우팅 모드
 
-**참고**: 현재 릴리스된 사전 빌드는 x86_64 아키텍처만 지원합니다. i686 또는 aarch64 버전이 필요한 경우 아래 지침에 따라 소스에서 컴파일하세요.
+| 모드 | LAN 트래픽 | 중국 본토 트래픽 | 해외 트래픽 |
+|---|---|---|---|
+| **LAN + 중국 우회**(기본값) | 직접 연결 | 직접 연결 | 프록시 경유 |
+| **LAN 우회** | 직접 연결 | 프록시 경유 | 프록시 경유 |
+| **중국 우회** | 프록시 경유 | 직접 연결 | 프록시 경유 |
+| **글로벌** | 프록시 경유 | 프록시 경유 | 프록시 경유 |
 
-### 설치
+라우터는 설정 가능한 라우터 포트에서 내장 SOCKS5 서버로 실행됩니다. 중국 IP 매칭은 내장된 APNIC 위임 데이터와 이진 검색을 사용하여 O(log n) 성능을 제공합니다.
 
-#### 빠른 빌드（권장）
+---
 
-`build.sh` 스크립트로 빌드와 패키징을 자동화：
+## 아키텍처 지원
+
+- **x86_64** (amd64) — 사전 빌드된 릴리스 제공
+- **i686** (32비트 x86) — 소스에서 빌드
+- **aarch64** (ARM 64비트) — 소스에서 빌드
+
+---
+
+## 설치
+
+### 빠른 빌드 (권장)
 
 ```bash
 git clone https://github.com/liangzhaoyuan12/shadowsocksr-client-linux.git
@@ -58,140 +75,129 @@ npm install
 ./build.sh
 ```
 
-`build/` 디렉터리에 다음이 생성됩니다：
-- `*.deb` — Debian/Ubuntu 패키지
-- `*.rpm` — Fedora/openSUSE 패키지
-- `shadowsocksr-client-linux_{버전}_{아키텍처}.tar.gz` — 휴대용 아카이브（deb/RPM 외 사용자용）
+`build/` 디렉터리에 출력되는 파일：
+- `*.deb` — Debian/Ubuntu
+- `*.rpm` — Fedora/openSUSE
+- `*.tar.gz` — 휴대용 아카이브
 
-#### 수동 빌드
+### 수동 빌드
 
-1. 저장소 클론:
 ```bash
 git clone https://github.com/liangzhaoyuan12/shadowsocksr-client-linux.git
 cd shadowsocksr-client-linux
-```
-
-2. 종속성 설치:
-```bash
 npm install
-```
-
-3. 현재 아키텍처용으로 빌드:
-```bash
 npm run tauri build
 ```
 
-빌드된 애플리케이션은 `src-tauri/target/release/bundle/`에 생성됩니다.
+### 크로스 컴파일
 
-#### 다른 아키텍처용 크로스 컴파일
-
-다른 아키텍처용으로 빌드하려면 대상을 지정할 수 있습니다:
-
-**i686(32비트)용:**
 ```bash
-# 대상 설치
+# i686
 rustup target add i686-unknown-linux-gnu
-
-# i686용 빌드
 npm run tauri build -- --target i686-unknown-linux-gnu
-```
 
-**aarch64(ARM 64비트)용:**
-```bash
-# 대상 설치
+# aarch64
 rustup target add aarch64-unknown-linux-gnu
-
-# aarch64용 빌드
 npm run tauri build -- --target aarch64-unknown-linux-gnu
 ```
 
-**참고**: 크로스 컴파일에는 추가 시스템 종속성과 도구 체인이 필요할 수 있습니다. 대상 아키텍처에 적합한 크로스 컴파일 도구가 설치되어 있는지 확인하세요.
+### 휴대용 tar.gz 사용법
 
-#### 사전 빌드 tar.gz 패키지 사용 (deb/RPM 사용자 외)
+필요한 시스템 라이브러리：**gtk3**, **webkit2gtk4.1**
 
-deb 기반(Debian, Ubuntu 등) 또는 rpm 기반(Fedora, openSUSE 등) 패키지 관리를 사용하지 않는 사용자는 릴리스의 `tar.gz` 아카이브에서 직접 애플리케이션을 실행할 수 있습니다.
+```bash
+tar -xzf shadowsocksr-client-linux_*.tar.gz
+cd shadowsocksr-client-linux
+./shadowsocksr-client-linux
+```
 
-**필요한 종속성:**
+---
 
-애플리케이션을 실행하기 전에 다음 시스템 라이브러리가 설치되어 있는지 확인하세요:
+## 사용법
 
-- **gtk3** - GTK+ 그래픽 사용자 인터페이스 라이브러리
-- **webkit2gtk4.1** - GTK 3 및 libsoup 3용 WebKitGTK
-
-**사용 방법:**
-
-1. 릴리스 페이지에서 `tar.gz` 패키지 다운로드（예: `shadowsocksr-client-linux_0.3.0_x86_64.tar.gz`）
-2. 아카이브 압축 해제:
-   ```bash
-   tar -xzf shadowsocksr-client-linux_*.tar.gz
-   ```
-3. 압축 해제된 디렉토리로 이동하여 실행 파일 실행:
-   ```bash
-   cd shadowsocksr-client-linux
-   ./shadowsocksr-client-linux
-   ```
-
-애플리케이션이 시작되지 않으면 필요한 모든 종속 라이브러리가 설치되어 있는지 확인하세요.
-
-### 사용 방법
-
-1. 애플리케이션 메뉴 또는 터미널에서 애플리케이션 실행
-2. "새 설정 추가"를 클릭하여 첫 번째 SSR 프로필 생성
-3. 서버 정보 입력:
+1. 애플리케이션을 실행합니다
+2. 「**+ 새 구성 추가**」를 클릭하고 SSR 서버 정보를 입력합니다：
    - 프로필 이름 (영문자만)
-   - 서버 주소
-   - 서버 포트
+   - 서버 주소 및 포트
    - 비밀번호
-   - 암호화 방식
-   - 프로토콜
-   - 난독화
-4. 목록에서 설정 선택
-5. "프록시 활성화"를 클릭하여 프록시 시작
+   - 암호화 방식, 프로토콜, 난독화
+   - **SSR 서비스 포트** — SSR sidecar의 내부 포트 (라우터 포트와 달라야 함)
+3. 사이드바에서 구성을 선택합니다
+4. 대시보드에서 **라우터 포트**(노출된 SOCKS5 포트)를 설정합니다 — SSR 포트와 달라야 함
+5. **라우팅 모드**를 선택합니다 (「LAN + 중국 우회」 권장)
+6. 필요에 따라 「**환경 변수 수정**」을 전환합니다 (체크박스 아래 경고 참조)
+7. 「**프록시 활성화**」를 클릭합니다
 
-#### 로컬 프록시 설정
+### 프록시 설정
 
-활성화되면 로컬 SOCKS5 프록시가 다음 주소에서 사용 가능합니다:
-- **주소**: `127.0.0.1`
-- **포트**: 프로필에서 설정한 포트 (기본값: 1080)
+활성화되면 애플리케이션은 다음을 통해 연결할 수 있습니다：
+- **SOCKS5**：`127.0.0.1:<router-port>` (대시보드에 표시됨)
 
-#### 데스크톱별 프록시 동작
+### 환경 변수 미사용 시 (Proxychains)
 
-- **GNOME 계열 및 KDE Plasma**: GUI 애플리케이션은 프록시 설정을 자동으로 따릅니다 — 재시작 불필요. 터미널 애플리케이션은 터미널 창을 다시 연 후 프록시를 사용합니다.
-- **XFCE 및 창 관리자(i3, sway, Hyprland 등)**: 모든 애플리케이션(GUI 및 터미널)을 다시 열어야 적용됩니다. 프록시는 환경 변수(`all_proxy`, `ALL_PROXY`)를 통해 `~/.config/environment.d/`와 `~/.xprofile`에 기록됩니다.
+「환경 변수 수정」이 꺼져 있을 때 proxychains를 사용하여 명령별 라우팅을 수행합니다：
 
-### 기술 스택
+```bash
+# 설치
+sudo apt install proxychains4
 
-- **프론트엔드**: Vue 3 + Composition API
-- **데스크톱 프레임워크**: Tauri 2.0
-- **백엔드**: shadowsocksr-native
-- **빌드 도구**: Vite
-- **국제화**: vue-i18n
+# /etc/proxychains4.conf 편집, [ProxyList]에 추가：
+socks5 127.0.0.1 1080
 
-### 프로젝트 구조
+# 사용 예시
+proxychains curl https://www.google.com
+proxychains git clone https://github.com/...
+```
+
+---
+
+## 기술 스택
+
+| 계층 | 기술 |
+|---|---|
+| 프론트엔드 | Vue 3 + Composition API |
+| 데스크톱 프레임워크 | Tauri 2.0 |
+| 백엔드 (라우팅) | Rust + Tokio (내장 SOCKS5 프록시 라우터) |
+| 백엔드 (SSR) | shadowsocksr-native sidecar |
+| 빌드 도구 | Vite |
+| 국제화 | vue-i18n |
+
+---
+
+## 프로젝트 구조
 
 ```
 shadowsocksr-client-linux/
-├── src/                    # Vue 프론트엔드 소스
-│   ├── components/         # Vue 컴포넌트
-│   ├── locales/           # 번역 파일
-│   └── utils/             # 유틸리티 함수
-├── src-tauri/             # Tauri 백엔드
-│   ├── binaries/          # SSR 네이티브 바이너리
-│   ├── src/               # Rust 소스 코드
-│   └── tauri.conf.json    # Tauri 설정
-└── package.json           # Node.js 종속성
+├── src/                    # Vue 프론트엔드
+│   ├── components/         # Vue 컴포넌트 (ConfigForm, ConfigList, ProxyControl)
+│   ├── locales/           # 7개 언어 번역 파일
+│   └── utils/             # Tauri API 래퍼
+├── src-tauri/             # Tauri + Rust 백엔드
+│   ├── binaries/          # SSR 네이티브 sidecar 바이너리 (3개 아키텍처)
+│   ├── src/
+│   │   ├── router.rs      # SOCKS5 프록시 라우터 (스마트 라우팅)
+│   │   ├── china_ip.rs    # 중국 IP 범위 매칭 (APNIC 데이터)
+│   │   ├── ssr_process.rs # Sidecar 생명주기 관리
+│   │   ├── proxy.rs       # 데스크톱 프록시 통합 (GNOME/KDE/XFCE/WM)
+│   │   └── model.rs       # 데이터 모델 + RouteMode 열거형
+│   └── tauri.conf.json
+└── build.sh               # 원클릭 빌드 + 패키징 스크립트
 ```
 
-### 라이선스
+---
 
-본 프로젝트는 MIT 라이선스에 따라 제공됩니다 - 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
+## 라이선스
 
-### 감사의 글
+MIT — [LICENSE](LICENSE)를 참조하세요.
 
-상류 프로젝트 및 기여자들에게 특별한 감사를 드립니다:
+---
 
-- **[shadowsocksr-native](https://github.com/ShadowsocksR-Live/shadowsocksr-native)** by [ssrlive](https://github.com/ssrlive) - 본 클라이언트의 핵심 SSR 구현
+## 감사의 글
 
-### 면책 조항
+- **[shadowsocksr-native](https://github.com/ShadowsocksR-Live/shadowsocksr-native)** by [ssrlive](https://github.com/ssrlive) — 핵심 SSR 구현
 
-본 소프트웨어는 교육 및 연구 목적으로만 제공됩니다. 사용자는 본 소프트웨어 사용 시 현지 법률 및 규정을 준수할 책임이 있습니다.
+---
+
+## 면책 조항
+
+본 소프트웨어는 교육 및 연구 목적으로만 제공됩니다. 사용자는 현지 법률 및 규정을 준수할 책임이 있습니다.

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { enableProxy, disableProxy } from "../utils/api";
 
@@ -13,14 +13,34 @@ const props = defineProps({
   proxyEnabled: {
     type: Boolean,
     default: false
+  },
+  routeMode: {
+    type: String,
+    default: "global"
   }
 });
 
-const emit = defineEmits(["status-changed"]);
+const emit = defineEmits(["status-changed", "modify-env-changed"]);
 
 const loading = ref(false);
 const error = ref("");
 const success = ref("");
+
+const MODIFY_ENV_KEY = "ssr-client-modify-env";
+const modifyEnv = ref(true);
+
+onMounted(() => {
+  const saved = localStorage.getItem(MODIFY_ENV_KEY);
+  if (saved !== null) {
+    modifyEnv.value = saved === "true";
+  }
+  emit("modify-env-changed", modifyEnv.value);
+});
+
+function onModifyEnvChange() {
+  localStorage.setItem(MODIFY_ENV_KEY, modifyEnv.value);
+  emit("modify-env-changed", modifyEnv.value);
+}
 
 async function handleEnable() {
   if (!props.activeConfig) {
@@ -33,7 +53,7 @@ async function handleEnable() {
   success.value = "";
 
   try {
-    await enableProxy(props.activeConfig);
+    await enableProxy(props.activeConfig, modifyEnv.value, props.routeMode);
     success.value = t('proxyControl.success.enabled');
     emit("status-changed", true);
     setTimeout(() => {
@@ -52,7 +72,7 @@ async function handleDisable() {
   success.value = "";
 
   try {
-    await disableProxy();
+    await disableProxy(modifyEnv.value);
     success.value = t('proxyControl.success.disabled');
     emit("status-changed", false);
     setTimeout(() => {
@@ -110,6 +130,23 @@ async function handleDisable() {
         >
           {{ loading && proxyEnabled ? t('proxyControl.disconnecting') : t('proxyControl.disableProxy') }}
         </button>
+      </div>
+
+      <div class="env-var-option">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            v-model="modifyEnv"
+            :disabled="loading"
+            @change="onModifyEnvChange"
+          />
+          <span>{{ t('proxyControl.modifyEnvVar') }}</span>
+        </label>
+        <div class="env-warning">
+          <p>{{ t('proxyControl.envWarning1') }}</p>
+          <p>{{ t('proxyControl.envWarning2') }}</p>
+          <p>{{ t('proxyControl.envWarning3') }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -217,6 +254,42 @@ async function handleDisable() {
 .control-buttons {
   display: flex;
   gap: 12px;
+  margin-bottom: 16px;
+}
+
+.env-var-option {
+  padding: 14px;
+  background: var(--item-bg);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.env-warning {
+  padding-left: 24px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.env-warning p {
+  margin: 2px 0;
 }
 
 .btn {

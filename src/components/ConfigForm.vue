@@ -38,7 +38,8 @@ const formData = reactive({
     server: "",
     server_port: 443,
     listen_address: "0.0.0.0",
-    listen_port: 1080
+    listen_port: 1080,
+    ssr_service_port: 1081
   }
 });
 
@@ -145,7 +146,8 @@ function resetForm() {
       server: "",
       server_port: 443,
       listen_address: "0.0.0.0",
-      listen_port: 1080
+      listen_port: 1080,
+      ssr_service_port: 1081
     }
   });
 }
@@ -255,17 +257,20 @@ watch(() => props.configName, () => {
               <option v-for="o in obfsList" :key="o" :value="o">{{ o }}</option>
             </select>
           </div>
+        </div>
 
+        <div class="form-row">
           <div class="form-group">
-            <label for="listen_port">{{ t('configForm.localPort') }}</label>
+            <label for="ssr_service_port">{{ t('configForm.ssrServicePort') }}</label>
             <input
-              id="listen_port"
-              v-model.number="formData.client_settings.listen_port"
+              id="ssr_service_port"
+              v-model.number="formData.client_settings.ssr_service_port"
               type="number"
               min="1"
               max="65535"
               :disabled="loading"
             />
+            <span class="hint">{{ t('configForm.ssrServicePortHint') }}</span>
           </div>
         </div>
       </div>

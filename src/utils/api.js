@@ -53,8 +53,8 @@ export async function getConfigInfo(cfgName) {
  * @param {string} cfgName - 配置文件名
  * @returns {Promise<Object>}
  */
-export async function enableProxy(cfgName) {
-  const response = await invoke("enable_proxy", { cfgName });
+export async function enableProxy(cfgName, modifyEnv = true, routeMode = "global") {
+  const response = await invoke("enable_proxy", { cfgName, modifyEnv, routeMode });
   return JSON.parse(response);
 }
 
@@ -62,7 +62,7 @@ export async function enableProxy(cfgName) {
  * 禁用代理
  * @returns {Promise<Object>}
  */
-export async function disableProxy() {
-  const response = await invoke("disable_proxy");
+export async function disableProxy(modifyEnv = true) {
+  const response = await invoke("disable_proxy", { modifyEnv });
   return JSON.parse(response);
 }

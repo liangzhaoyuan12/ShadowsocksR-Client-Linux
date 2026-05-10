@@ -1,6 +1,5 @@
-use std::{fs::remove_file, path::PathBuf};
+use std::fs::remove_file;
 
-use super::model::*;
 use anyhow::{Result, anyhow};
 use super::get_path::home_dir;
 /**

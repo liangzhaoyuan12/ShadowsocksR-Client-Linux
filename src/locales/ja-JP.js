@@ -50,6 +50,8 @@ export default {
     connectTimeout: '接続タイムアウト（秒）',
     udpTimeout: 'UDP タイムアウト（秒）',
     enableUdp: 'UDP リレーを有効にする',
+    ssrServicePort: 'SSR サービスポート',
+    ssrServicePortHint: 'ssr-native-client の内部ポート、ルーターポートと異なる必要があります',
     validation: {
       nameRequired: '設定名は英字（a-z, A-Z）のみ使用できます',
       serverRequired: 'サーバーアドレスは必須です',
@@ -73,6 +75,10 @@ export default {
     disableProxy: 'プロキシを無効化',
     connecting: '接続中...',
     disconnecting: '切断中...',
+    modifyEnvVar: '環境変数を変更（all_proxy / ALL_PROXY を設定）',
+    envWarning1: '• 有効化後、新しく開いたターミナルのみプロキシが適用されます',
+    envWarning2: '• 無効化後、既存のターミナルはネットワークに接続できなくなります。再起動してください',
+    envWarning3: '• XFCE / i3 / sway / Hyprland / Openbox / dwm など、GNOME / KDE 以外のデスクトップ環境では、ターミナルでプロキシを使用するために必ずチェックが必要です',
     success: {
       enabled: 'プロキシを有効化しました！',
       disabled: 'プロキシを無効化しました！'
@@ -86,15 +92,31 @@ export default {
     howToUse: '使用方法',
     steps: [
       'Firefox には独自のプロキシ設定があります。Firefox を使用する場合は、ブラウザの設定でプロキシを設定する必要があります。FoxyProxy 拡張機能を使用して SOCKS プロキシを設定することをお勧めします。Chromium ベースのブラウザを使用する場合は、この手順は不要です。',
-      'プロキシを有効にすると、ターミナルアプリケーションは自動的に SOCKS プロキシを使用します。すでに開いているターミナルウィンドウがある場合は、再度開き直してください。',
-      'GNOME/Cinnamon/MATE/COSMIC/Budgie/Pantheon/Unity/Deepin/UOS/UKUI/Ubuntu および KDE Plasma デスクトップユーザー：GUI アプリケーションは自動的にプロキシ設定に従います。再起動が必要なのはターミナルのみです。その他のデスクトップ（XFCE、i3、sway、Hyprland など）：すべてのアプリケーションを再起動する必要があります。',
+      'ターミナルのプロキシは「環境変数を変更」オプションに依存します。チェックを入れると、新しく開いたターミナルは自動的に SOCKS プロキシを使用します（既存のターミナルは再起動が必要です）。',
+      'GNOME / Cinnamon / MATE / COSMIC / Budgie / Pantheon / Unity / Deepin / UOS / UKUI / Ubuntu および KDE Plasma ユーザー：GUI アプリはシステムプロキシ設定に自動的に従います。XFCE / i3 / sway / Hyprland / Openbox / dwm などの他のデスクトップ：GUI アプリは自動的にシステムプロキシを使用しません。「環境変数を変更」にチェックを入れてターミナルを再起動してください。',
+      '「環境変数を変更」をチェックしない場合、proxychains を使用して特定のコマンドのみプロキシ経由で実行できます（下記の Proxychains 設定ガイドを参照）。',
       'プロジェクトURL: https://github.com/liangzhaoyuan12/shadowsocksr-client-linux',
       'ライセンス: MIT'
     ],
     localProxySettings: 'ローカルプロキシ設定',
     socks5: 'SOCKS5 プロキシ',
     portLabel: 'ポート',
-    followSystem: 'システムに従う'
+    followSystem: 'システムに従う',
+    routeMode: 'プロキシルートモード',
+    routeGlobal: 'グローバル',
+    routeBypassLan: 'LANをバイパス',
+    routeBypassChina: '中国本土をバイパス',
+    routeBypassLanChina: 'LAN + 中国本土をバイパス',
+    portHint: 'ルーターポート {routerPort}（SSR サービスポート {ssrPort} と異なる必要があります）',
+    portConflictHint: '❌ ルーターポート {routerPort} が SSR ポート {ssrPort} と競合しています。異なる値を設定してください！',
+    proxychainsTitle: 'Proxychains 設定（環境変数変更なし）',
+    proxychainsIntro: '「環境変数を変更」をチェックしていない場合、proxychains を使用して特定のプログラムを SOCKS5 プロキシ経由で実行できます：',
+    proxychainsStep1: 'proxychains をインストール（既にインストール済みの場合はスキップ）：sudo apt install proxychains4',
+    proxychainsStep2: '/etc/proxychains4.conf を編集し、[ProxyList] セクションの末尾に以下の設定を追加（既存のプロキシがある場合は最後に追加）',
+    proxychainsStep3: 'コマンドの前に',
+    proxychainsStep3Suffix: 'を付けるとプロキシ経由で実行されます。例：proxychains curl https://www.google.com',
+    proxychainsConfigFile: '/etc/proxychains4.conf の [ProxyList] セクションに追加：',
+    proxychainsConfigHint: '注意：[ProxyList] に既に他のプロキシエントリがある場合は、それらをコメントアウト（行頭に #）するか削除し、上記の1行のみを残してください。'
   },
   footer: {
     text: 'ShadowsocksR Linux クライアント'

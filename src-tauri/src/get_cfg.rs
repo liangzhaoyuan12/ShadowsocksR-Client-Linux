@@ -1,5 +1,4 @@
-use std::path::PathBuf;
-use std::fs::{self, DirEntry};
+use std::fs::{self};
 use anyhow::{Result, anyhow};
 use super::model::ShadowSocksConfigList;
 use super::model::ShadowsocksConfigReceive;
@@ -27,8 +26,8 @@ pub fn get_cfg_list() -> Result<String> {
                 if file_type.is_file() {
                     let file_name = entry.file_name();
                     if let Some(filename) = file_name.to_str() {
-                        // 只读取文件名后缀为.json的文件名
-                        if filename.ends_with(".json") {
+                        // 只读取文件名后缀为.json的文件名，排除临时配置文件
+                        if filename.ends_with(".json") && !filename.ends_with(".tmp.json") {
                             let config_name = &filename[..filename.len() - 5].to_string();
                             list.push(config_name.to_string());
                         }

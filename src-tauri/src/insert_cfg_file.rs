@@ -21,7 +21,7 @@
 // }
 // 对前端（写死在前端）的要求：listen_address必须为0.0.0.0
 //                             cfg_name的内容只允许包含大小写英文字母和数字的组成
-use std::{fs::{File, create_dir_all}, io::Write, path::{PathBuf}};
+use std::{fs::{File, create_dir_all}, io::Write};
 use super::model::*;
 use anyhow::Result;
 use super::get_path::home_dir;

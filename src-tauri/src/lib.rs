@@ -4,6 +4,8 @@ mod remove_cfg_file;
 mod get_cfg;
 mod ssr_process;
 mod proxy;
+mod router;
+mod china_ip;
 mod get_path;
 mod notification;
 use model::*;
@@ -28,11 +30,8 @@ pub fn run() {
                         let window = main_window.clone();
                         // 执行关闭ssr进程程序
                         tauri::async_runtime::spawn(async move {
-                            // 尝试关闭代理，忽略错误（可能本来就没运行）
-                            let _ = ssr_process::disable().await;
-                            // 先销毁窗口引用，再退出应用
+                            let _ = ssr_process::disable(true).await;
                             drop(window);
-                            // 退出应用程序
                             app_handle.exit(0);
                         });
                     }
@@ -187,8 +186,9 @@ async fn get_cfg_info(cfg_name: &str) -> Result<String, String> {
 }
 
 #[tauri::command]
-async fn enable_proxy(app: tauri::AppHandle ,cfg_name: &str) -> Result<String, String> {
-    match ssr_process::enable(cfg_name, app).await {
+async fn enable_proxy(app: tauri::AppHandle, cfg_name: &str, modify_env: bool, route_mode: &str) -> Result<String, String> {
+    let mode = RouteMode::from_str(route_mode).unwrap_or(RouteMode::Global);
+    match ssr_process::enable(cfg_name, app, modify_env, mode).await {
         Ok(_) => {
             let response = status_response::new(status_type::success, "");
             return Ok(response.to_string());
@@ -201,8 +201,8 @@ async fn enable_proxy(app: tauri::AppHandle ,cfg_name: &str) -> Result<String, S
 }
 
 #[tauri::command]
-async fn disable_proxy() -> Result<String, String> {
-    match ssr_process::disable().await {
+async fn disable_proxy(modify_env: bool) -> Result<String, String> {
+    match ssr_process::disable(modify_env).await {
         Ok(_) => {
             let response = status_response::new(status_type::success, "");
             return Ok(response.to_string());

@@ -73,11 +73,42 @@ pub struct ClientSettings {
     pub server_port: u16,
     pub listen_address: String,
     pub listen_port: u16,
+    #[serde(default = "default_ssr_port")]
+    pub ssr_service_port: u16,
 }
+
+fn default_ssr_port() -> u16 { 1081 }
 /**
  * 用于获取总共的配置文件的配置文件名的列表
  */
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ShadowSocksConfigList {
     pub cfg_list: Vec<String>
+}
+
+/**
+ * 代理路由模式
+ */
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum RouteMode {
+    #[serde(rename = "global")]
+    Global,
+    #[serde(rename = "bypass_lan")]
+    BypassLan,
+    #[serde(rename = "bypass_china")]
+    BypassChina,
+    #[serde(rename = "bypass_lan_china")]
+    BypassLanChina,
+}
+
+impl RouteMode {
+    pub fn from_str(s: &str) -> Option<RouteMode> {
+        match s {
+            "global" => Some(RouteMode::Global),
+            "bypass_lan" => Some(RouteMode::BypassLan),
+            "bypass_china" => Some(RouteMode::BypassChina),
+            "bypass_lan_china" => Some(RouteMode::BypassLanChina),
+            _ => None,
+        }
+    }
 }

@@ -4,7 +4,7 @@ import { useI18n } from "vue-i18n";
 import ConfigList from "./components/ConfigList.vue";
 import ConfigForm from "./components/ConfigForm.vue";
 import ProxyControl from "./components/ProxyControl.vue";
-import { getConfigInfo, disableProxy } from "./utils/api";
+import { getConfigInfo, disableProxy, insertConfig } from "./utils/api";
 import { detectSystemLocale, isAutoMode, STORAGE_KEY } from "./i18n";
 
 const ACTIVE_CONFIG_KEY = 'ssr-client-active-config';
@@ -13,14 +13,30 @@ const { t, locale, tm } = useI18n();
 
 const activeConfig = ref(null);
 const proxyEnabled = ref(false);
+const modifyEnv = ref(true);
+const routeMode = ref("bypass_lan_china");
 const showForm = ref(false);
 const editMode = ref(false);
 const editingConfig = ref("");
 const configListRef = ref(null);
 const activeConfigPort = ref(1080);
+const activeSsrPort = ref(1081);
 
 // Use tm() to get raw message objects (preserves arrays)
 const steps = computed(() => tm('dashboard.steps'));
+
+// Dynamic proxychains config line
+const proxychainsConfig = computed(() => {
+  const port = activeConfigPort.value || 1080;
+  return `socks5 127.0.0.1 ${port}`;
+});
+
+const routeModes = [
+  { value: "bypass_lan_china", label: "dashboard.routeBypassLanChina" },
+  { value: "bypass_lan", label: "dashboard.routeBypassLan" },
+  { value: "bypass_china", label: "dashboard.routeBypassChina" },
+  { value: "global", label: "dashboard.routeGlobal" },
+];
 
 // Language switch
 const followSystem = ref(isAutoMode());
@@ -80,14 +96,17 @@ const currentLangName = computed(() => {
 async function updateActiveConfigPort(cfgName) {
   if (!cfgName) {
     activeConfigPort.value = 1080;
+    activeSsrPort.value = 1081;
     return;
   }
   try {
     const config = await getConfigInfo(cfgName);
     activeConfigPort.value = config.client_settings?.listen_port || 1080;
+    activeSsrPort.value = config.client_settings?.ssr_service_port || 1081;
   } catch (err) {
     console.error("Failed to get config info:", err);
     activeConfigPort.value = 1080;
+    activeSsrPort.value = 1081;
   }
 }
 
@@ -106,7 +125,7 @@ function handleSelectConfig(cfgName) {
 
 async function disableProxyAndSelect(cfgName) {
   try {
-    await disableProxy();
+    await disableProxy(modifyEnv.value);
     proxyEnabled.value = false;
     activeConfig.value = cfgName;
     localStorage.setItem(ACTIVE_CONFIG_KEY, cfgName);
@@ -149,6 +168,27 @@ function handleFormCancelled() {
 
 function handleProxyStatusChanged(enabled) {
   proxyEnabled.value = enabled;
+}
+
+function handleModifyEnvChanged(val) {
+  modifyEnv.value = val;
+}
+
+async function handlePortChange(event) {
+  const newPort = parseInt(event.target.value, 10);
+  if (!newPort || newPort < 1 || newPort > 65535 || !activeConfig.value) {
+    event.target.value = activeConfigPort.value;
+    return;
+  }
+  try {
+    const config = await getConfigInfo(activeConfig.value);
+    config.client_settings.listen_port = newPort;
+    await insertConfig(config);
+    activeConfigPort.value = newPort;
+  } catch (err) {
+    console.error("Failed to update port:", err);
+    event.target.value = activeConfigPort.value;
+  }
 }
 
 // Setup click outside listener for dropdown
@@ -229,8 +269,52 @@ onUnmounted(() => {
             <ProxyControl
               :active-config="activeConfig"
               :proxy-enabled="proxyEnabled"
+              :route-mode="routeMode"
               @status-changed="handleProxyStatusChanged"
+              @modify-env-changed="handleModifyEnvChanged"
             />
+
+            <div class="route-mode-selector">
+              <div class="route-header">
+                <h4>{{ t('dashboard.routeMode') }}</h4>
+                <div class="local-port-display">
+                  <label class="port-label">{{ t('dashboard.socks5') }} 127.0.0.1:</label>
+                  <input
+                    type="number"
+                    class="port-input"
+                    :value="activeConfigPort"
+                    min="1"
+                    max="65535"
+                    :disabled="proxyEnabled || !activeConfig"
+                    @change="handlePortChange"
+                  />
+                </div>
+              </div>
+              <div class="port-hint">
+                <span v-if="activeConfig && activeConfigPort === activeSsrPort" class="port-hint-warn">
+                  {{ t('dashboard.portConflictHint', { routerPort: activeConfigPort, ssrPort: activeSsrPort }) }}
+                </span>
+                <span v-else-if="activeConfig">
+                  {{ t('dashboard.portHint', { routerPort: activeConfigPort, ssrPort: activeSsrPort }) }}
+                </span>
+              </div>
+              <div class="route-mode-options">
+                <label
+                  v-for="mode in routeModes"
+                  :key="mode.value"
+                  class="route-mode-option"
+                  :class="{ active: routeMode === mode.value }"
+                >
+                  <input
+                    type="radio"
+                    :value="mode.value"
+                    v-model="routeMode"
+                    :disabled="proxyEnabled"
+                  />
+                  <span>{{ t(mode.label) }}</span>
+                </label>
+              </div>
+            </div>
 
             <div class="info-cards">
               <div class="info-card">
@@ -242,12 +326,21 @@ onUnmounted(() => {
                 </ol>
               </div>
 
-              <div class="info-card">
-                <h4>{{ t('dashboard.localProxySettings') }}</h4>
-                <ul>
-                  <li><strong>{{ t('dashboard.socks5') }}:</strong> 127.0.0.1:{{ activeConfigPort || '1080' }}</li>
-                </ul>
+              <div class="info-card proxychains-card">
+                <h4>{{ t('dashboard.proxychainsTitle') }}</h4>
+                <p>{{ t('dashboard.proxychainsIntro') }}</p>
+                <ol>
+                  <li>{{ t('dashboard.proxychainsStep1') }}</li>
+                  <li>{{ t('dashboard.proxychainsStep2') }}</li>
+                  <li>{{ t('dashboard.proxychainsStep3') }} <code>proxychains</code> {{ t('dashboard.proxychainsStep3Suffix') }}</li>
+                </ol>
+                <div class="conf-block">
+                  <h5>{{ t('dashboard.proxychainsConfigFile') }}</h5>
+                  <pre><code>socks5 127.0.0.1 {{ activeConfigPort || 1080 }}</code></pre>
+                  <p class="conf-hint">{{ t('dashboard.proxychainsConfigHint') }}</p>
+                </div>
               </div>
+
             </div>
           </div>
         </section>
@@ -553,6 +646,153 @@ body {
   color: var(--text-secondary);
   font-size: 13px;
   border-top: 1px solid var(--border-color);
+}
+
+.proxychains-card p {
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.proxychains-card ol {
+  margin-bottom: 12px;
+}
+
+.conf-block {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--bg-primary);
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.conf-block h5 {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0 0 6px 0;
+  font-weight: 600;
+}
+
+.conf-block pre {
+  margin: 0;
+  padding: 8px;
+  background: #1a202c;
+  color: #48bb78;
+  border-radius: 4px;
+  font-size: 13px;
+  overflow-x: auto;
+}
+
+.conf-block code {
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
+.conf-hint {
+  margin: 6px 0 0 0;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.route-mode-selector {
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.route-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.route-header h4 {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.local-port-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.port-label {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.port-input {
+  width: 80px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary-color);
+  background: var(--input-bg);
+  text-align: center;
+}
+
+.port-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.port-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  padding-left: 4px;
+}
+
+.port-hint-warn {
+  color: var(--danger-color);
+  font-weight: 600;
+}
+
+.route-mode-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.route-mode-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--item-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+.route-mode-option.active {
+  background: var(--active-item-bg);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.route-mode-option input[type="radio"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.route-mode-option:hover:not(:has(input:disabled)) {
+  border-color: var(--primary-color);
 }
 
 @media (max-width: 768px) {

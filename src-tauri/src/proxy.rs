@@ -76,7 +76,7 @@ fn detect_desktop() -> DesktopType {
 }
 
 // ===== ENABLE PROXY =====
-pub async fn enable(port: u16) {
+pub async fn enable(port: u16, modify_env: bool) {
     let desktop = detect_desktop();
     let body = format!(
         "Please manually configure system SOCKS proxy\nSOCKS proxy settings:\nHost: 127.0.0.1\nPort: {}",
@@ -86,7 +86,7 @@ pub async fn enable(port: u16) {
     match desktop {
         DesktopType::Kde => {
             let kde_ok = enable_proxy_kde(port).is_ok();
-            let env_ok = enable_proxy_env(port).is_ok();
+            let env_ok = if modify_env { enable_proxy_env(port).is_ok() } else { true };
             if kde_ok && env_ok {
                 notification::send("KDE + terminal proxy setup successful", "GUI and terminal both use SOCKS proxy").await;
             } else if kde_ok {
@@ -97,7 +97,7 @@ pub async fn enable(port: u16) {
         }
         DesktopType::Gnome => {
             let gnome_ok = enable_proxy_gnome(port).is_ok();
-            let env_ok = enable_proxy_env(port).is_ok();
+            let env_ok = if modify_env { enable_proxy_env(port).is_ok() } else { true };
             if gnome_ok && env_ok {
                 notification::send("GNOME + terminal proxy setup successful", "GUI and terminal both use SOCKS proxy").await;
             } else if gnome_ok {
@@ -108,7 +108,7 @@ pub async fn enable(port: u16) {
         }
         DesktopType::Xfce => {
             let xfce_ok = enable_proxy_xfce(port).is_ok();
-            let env_ok = enable_proxy_env(port).is_ok();
+            let env_ok = if modify_env { enable_proxy_env(port).is_ok() } else { true };
             if xfce_ok && env_ok {
                 notification::send("XFCE + terminal proxy setup successful", "GUI and terminal both use SOCKS proxy").await;
             } else if xfce_ok {
@@ -118,24 +118,28 @@ pub async fn enable(port: u16) {
             }
         }
         DesktopType::Wm | DesktopType::Unknown => {
-            if enable_proxy_env(port).is_ok() {
-                notification::send("Proxy environment variables set", "Terminal commands will use SOCKS proxy (new sessions only)").await;
+            if modify_env {
+                if enable_proxy_env(port).is_ok() {
+                    notification::send("Proxy environment variables set", "Terminal commands will use SOCKS proxy (new sessions only)").await;
+                } else {
+                    notification::send("Failed to set proxy environment variables", &body).await;
+                }
             } else {
-                notification::send("Failed to set proxy environment variables", &body).await;
+                notification::send("SOCKS5 proxy enabled", "Use proxychains or manually configure proxy settings in terminal").await;
             }
         }
     }
 }
 
 // ===== DISABLE PROXY =====
-pub async fn disable() {
+pub async fn disable(modify_env: bool) {
     let desktop = detect_desktop();
     let body = "Please manually disable system proxy settings".to_string();
 
     match desktop {
         DesktopType::Kde => {
             let kde_ok = disable_proxy_kde().is_ok();
-            let env_ok = disable_proxy_env().is_ok();
+            let env_ok = if modify_env { disable_proxy_env().is_ok() } else { true };
             if kde_ok && env_ok {
                 notification::send("KDE + terminal proxy disabled", "Enjoy browsing the web").await;
             } else if kde_ok {
@@ -146,7 +150,7 @@ pub async fn disable() {
         }
         DesktopType::Gnome => {
             let gnome_ok = disable_proxy_gnome().is_ok();
-            let env_ok = disable_proxy_env().is_ok();
+            let env_ok = if modify_env { disable_proxy_env().is_ok() } else { true };
             if gnome_ok && env_ok {
                 notification::send("GNOME + terminal proxy disabled", "Enjoy browsing the web").await;
             } else if gnome_ok {
@@ -157,7 +161,7 @@ pub async fn disable() {
         }
         DesktopType::Xfce => {
             let xfce_ok = disable_proxy_xfce().is_ok();
-            let env_ok = disable_proxy_env().is_ok();
+            let env_ok = if modify_env { disable_proxy_env().is_ok() } else { true };
             if xfce_ok && env_ok {
                 notification::send("XFCE + terminal proxy disabled", "Enjoy browsing the web").await;
             } else if xfce_ok {
@@ -167,10 +171,14 @@ pub async fn disable() {
             }
         }
         DesktopType::Wm | DesktopType::Unknown => {
-            if disable_proxy_env().is_ok() {
-                notification::send("Proxy environment variables cleared", "Enjoy browsing the web").await;
+            if modify_env {
+                if disable_proxy_env().is_ok() {
+                    notification::send("Proxy environment variables cleared", "Enjoy browsing the web").await;
+                } else {
+                    notification::send("Failed to clear proxy environment variables", &body).await;
+                }
             } else {
-                notification::send("Failed to clear proxy environment variables", &body).await;
+                notification::send("SOCKS5 proxy disabled", "System proxy settings cleaned").await;
             }
         }
     }
