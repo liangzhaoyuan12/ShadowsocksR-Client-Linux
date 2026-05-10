@@ -52,8 +52,16 @@ pub async fn disable() -> Result<()> {
         return Err(anyhow!("ssr client isn't running"));
     }
     if let Some(child) = guard.take() {
-        child.kill()?;
+        let _ = child.kill();
     }
+    // 由于 ssr-native-client 使用 -d 参数以 daemon 模式运行，
+    // 父进程 fork 后退出，CommandChild 跟踪的是已退出的父进程，
+    // 因此需要通过进程名强制杀死 daemon 子进程。
+    let _ = std::process::Command::new("pkill")
+        .arg("-9")
+        .arg("-f")
+        .arg("ssr-native-client")
+        .output();
     proxy::disable().await;
     return Ok(());
 }
